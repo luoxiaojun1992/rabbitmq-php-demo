@@ -1,1 +1,1 @@
-# activemq-php-demo
+# rabbitmq-php-demo
