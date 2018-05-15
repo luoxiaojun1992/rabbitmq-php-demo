@@ -11,12 +11,23 @@ define('USER', 'guest');
 define('PASS', 'guest');
 define('VHOST', '/');
 
-$exchange = 'test';
+$exchange = 'delay_test';
 $queue = 'test';
 $connection = new AMQPStreamConnection(HOST, PORT, USER, PASS, VHOST);
 $channel = $connection->channel();
 $channel->queue_declare($queue, false, true, false, false);
-$channel->exchange_declare($exchange, 'direct', false, true, false);
+$channel->exchange_declare(
+    $exchange,
+    'x-delayed-message',
+    false,
+    true,
+    false,
+    false,
+    false,
+    [
+        'x-delayed-type' => ['S', 'direct']
+    ]
+);
 $channel->queue_bind($queue, $exchange);
 
 $channel->basic_consume(
