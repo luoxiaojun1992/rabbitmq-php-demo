@@ -15,19 +15,22 @@ $channel = new AMQPChannel($connection);
 
 //Declare exchange
 $exchange = new AMQPExchange($channel);
-$exchange->setName('test_direct');
-$exchange->setType(AMQP_EX_TYPE_DIRECT);
+$exchange->setName('test_delay');
+$exchange->setType('x-delayed-message');
+$exchange->setArguments([
+    'x-delayed-type' => AMQP_EX_TYPE_DIRECT
+]);
 $exchange->declareExchange();
 
 try {
     //Declare Queue
     $queue = new AMQPQueue($channel);
-    $queue->setName('test_direct');
+    $queue->setName('test_delay');
     $queue->setFlags(AMQP_NOPARAM);
     $queue->declareQueue();
 
     //Bind queue to exchange
-    $queue->bind($exchange->getName(), 'test_direct');
+    $queue->bind($exchange->getName(), 'test_delay');
 
     while (true) {
         $queue->consume(function (AMQPEnvelope $message, AMQPQueue $q) {
